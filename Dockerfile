@@ -9,15 +9,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY whatsapp-agent/package*.json /app/whatsapp-agent/
+COPY whatsapp-agent/scripts /app/whatsapp-agent/scripts
 RUN cd /app/whatsapp-agent && npm ci
+
+RUN pip3 install --break-system-packages --no-cache-dir \
+    torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu \
+    && pip3 install --break-system-packages --no-cache-dir \
+    streamlit numpy pillow opencv-python-headless ultralytics \
+    && (pip3 uninstall -y opencv-python || true)
 
 COPY . /app
 
-RUN pip3 install --break-system-packages --no-cache-dir \
-    torch torchvision --index-url https://download.pytorch.org/whl/cpu \
-    && pip3 install --break-system-packages --no-cache-dir \
-    streamlit numpy pillow opencv-python-headless ultralytics \
-    && pip3 uninstall -y opencv-python || true
+RUN cd /app/whatsapp-agent && npm run build
 
 ENV PROJECT_ROOT=/app
 ENV PYTHON_EXECUTABLE=python3
