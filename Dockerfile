@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY whatsapp-agent/package*.json /app/whatsapp-agent/
+COPY whatsapp-agent/scripts /app/whatsapp-agent/scripts
 RUN cd /app/whatsapp-agent && npm ci
 
 COPY . /app
