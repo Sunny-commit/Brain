@@ -1,10 +1,36 @@
 import 'dotenv/config'
+import { createServer } from 'node:http'
 import qrcode from 'qrcode-terminal'
 import QRCode from 'qrcode'
 import WhatsApp from 'whatsapp-web.js'
 import { analyzeMri, cleanupAnalysis } from './inference.js'
 
 const { Client, LocalAuth, MessageMedia } = WhatsApp as any
+let latestQr: string | null = null
+
+const port = Number(process.env.PORT || 8080)
+createServer(async (request, response) => {
+  if (request.url === '/qr.png' && latestQr) {
+    const png = await QRCode.toBuffer(latestQr, {
+      width: 1200,
+      margin: 4,
+      errorCorrectionLevel: 'H',
+    })
+    response.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' })
+    response.end(png)
+    return
+  }
+
+  response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+  response.end(
+    latestQr
+      ? '<!doctype html><title>WhatsApp QR</title><p>Scan this square QR code with WhatsApp.</p><img src="/qr.png" width="600" height="600" alt="WhatsApp QR code">'
+      : '<!doctype html><title>Brain MRI WhatsApp Bridge</title><p>WhatsApp is connected or the QR code is not ready.</p>',
+  )
+}).listen(port, '0.0.0.0', () => {
+  console.log(`QR page available on port ${port}`)
+})
+
 const client = new Client({
   authStrategy: new LocalAuth({
     clientId: process.env.WHATSAPP_CLIENT_ID || 'brain-tumor-segmentation',
@@ -93,6 +119,7 @@ async function sendAnalysis(message: any) {
 }
 
 client.on('qr', (code: string) => {
+  latestQr = code
   qrcode.generate(code, { small: true })
   void QRCode.toFile('whatsapp-qr.png', code, {
     width: 1200,
