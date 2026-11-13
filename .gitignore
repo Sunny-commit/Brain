@@ -9,3 +9,11 @@ brain-tumor-mri-dataset.zip
 brain-tumors-dataset.zip
 .log
 .pytest_cache/
+node_modules/
+whatsapp-agent/node_modules/
+whatsapp-agent/dist/
+whatsapp-agent/.wwebjs_auth/
+whatsapp-agent/.wwebjs_cache/
+whatsapp-agent/whatsapp-qr.png
+.env
+whatsapp-agent/.env

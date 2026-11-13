@@ -1,0 +1,14 @@
+.git
+.gitignore
+.wwebjs_auth
+__pycache__
+*.pyc
+.pytest_cache
+.streamlit
+Data
+node_modules
+whatsapp-agent/node_modules
+whatsapp-agent/dist
+whatsapp-agent/.wwebjs_cache
+whatsapp-agent/whatsapp-qr.png
+*.log
