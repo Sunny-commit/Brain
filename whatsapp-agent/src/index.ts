@@ -1,5 +1,7 @@
 import 'dotenv/config'
 import { createServer } from 'node:http'
+import { existsSync, readdirSync, rmSync } from 'node:fs'
+import { join } from 'node:path'
 import qrcode from 'qrcode-terminal'
 import QRCode from 'qrcode'
 import WhatsApp from 'whatsapp-web.js'
@@ -30,6 +32,19 @@ createServer(async (request, response) => {
 }).listen(port, '0.0.0.0', () => {
   console.log(`QR page available on port ${port}`)
 })
+
+// Chromium leaves Singleton* lock files in the profile; on a persistent volume they
+// survive redeploys and block launch ("profile in use on another computer").
+const sessionRoot = process.env.WHATSAPP_SESSION_DIR || './.wwebjs_auth'
+const clearStaleChromiumLocks = (dir: string) => {
+  if (!existsSync(dir)) return
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name)
+    if (entry.isDirectory()) clearStaleChromiumLocks(full)
+    else if (['SingletonLock', 'SingletonCookie', 'SingletonSocket'].includes(entry.name)) rmSync(full, { force: true })
+  }
+}
+clearStaleChromiumLocks(sessionRoot)
 
 const client = new Client({
   authStrategy: new LocalAuth({
