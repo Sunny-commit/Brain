@@ -26,7 +26,7 @@ def main() -> None:
         explanation,
         _probabilities,
         regions,
-    ) = analyze_image(image, filename)
+    ) = analyze_image(image, filename, imgsz=384)
     Image.fromarray(overlay, mode="RGB").save(output_path, format="PNG")
     Path(metadata_path).write_text(
         json.dumps(
