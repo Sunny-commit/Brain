@@ -14,6 +14,8 @@ RUN cd /app/whatsapp-agent && npm ci
 
 COPY . /app
 
+RUN cd /app/whatsapp-agent && npm run build
+
 RUN pip3 install --break-system-packages --no-cache-dir \
     torch torchvision --index-url https://download.pytorch.org/whl/cpu \
     && pip3 install --break-system-packages --no-cache-dir \
