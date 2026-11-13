@@ -420,7 +420,7 @@ def render_image(image: ImageInput, caption: str) -> None:
 
 
 def analyze_image(
-    image: Image.Image, filename: str = "image.jpg"
+    image: Image.Image, filename: str = "image.jpg", imgsz: int = 640
 ) -> tuple[np.ndarray, str, int, float, float, str, dict[str, float], str]:
     """Run segmentation and classification for Streamlit or WhatsApp callers."""
     model = load_model()
@@ -428,6 +428,7 @@ def analyze_image(
         image,
         conf=0.15,
         device="cpu",
+        imgsz=imgsz,
         augment=True,
         verbose=False,
     )
@@ -438,6 +439,7 @@ def analyze_image(
             image,
             conf=0.05,
             device="cpu",
+            imgsz=imgsz,
             augment=True,
             verbose=False,
         )
@@ -544,6 +546,7 @@ def main() -> None:
             image,
             conf=confidence_threshold,
             device="cpu",
+            imgsz=imgsz,
             augment=True,
             verbose=False,
         )
@@ -554,6 +557,7 @@ def main() -> None:
                 image,
                 conf=0.05,
                 device="cpu",
+                imgsz=imgsz,
                 augment=True,
                 verbose=False,
             )

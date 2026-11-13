@@ -61,6 +61,7 @@ const client = new Client({
       '--disable-dev-shm-usage',
       '--disable-gpu',
     ],
+    protocolTimeout: 120_000,
   },
 })
 
@@ -152,7 +153,11 @@ client.on('message', (message: any) => {
   if (message.fromMe || !message.hasMedia) return
   sendAnalysis(message).catch((error: unknown) => {
     console.error('MRI analysis failed:', error)
-    message.reply('I could not analyze that image. Please try a clear JPG, JPEG, or PNG MRI scan.')
+    message
+      .reply('I could not analyze that image. Please try a clear JPG, JPEG, or PNG MRI scan.')
+      .catch((replyError: unknown) => {
+        console.error('Unable to send MRI error reply:', replyError)
+      })
   })
 })
 
